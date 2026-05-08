@@ -66,7 +66,10 @@ function updateUI() {
   // Update text nodes
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
-    el.textContent = t(key);
+    const translation = t(key);
+    if (translation !== key) {
+      el.textContent = translation;
+    }
   });
 
   // Update placeholder attributes
