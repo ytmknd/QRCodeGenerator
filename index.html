@@ -10,30 +10,35 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <div class="language-switcher">
+    <button id="lang-ja" class="lang-btn lang-btn-active" data-lang="ja">日本語</button>
+    <button id="lang-en" class="lang-btn" data-lang="en">English</button>
+  </div>
+
   <main class="app-shell">
     <section class="card card-input">
-      <p class="eyebrow">QRCode Generator</p>
-      <h1>QRコードを作成</h1>
-      <p class="lead">文字列やURLを入力して、QRコード画像を生成できます。</p>
+      <p class="eyebrow" data-i18n="appName">QRCode Generator</p>
+      <h1 data-i18n="title">QRコードを作成</h1>
+      <p class="lead" data-i18n="description">文字列やURLを入力して、QRコード画像を生成できます。</p>
 
-      <label for="qr-text" class="label">テキスト / URL</label>
-      <textarea id="qr-text" class="text-input" rows="5" placeholder="例: https://example.com"></textarea>
+      <label for="qr-text" class="label" data-i18n="inputLabel">テキスト / URL</label>
+      <textarea id="qr-text" class="text-input" rows="5" data-i18n-attr-placeholder="inputPlaceholder" placeholder="例: https://example.com"></textarea>
 
       <div class="controls">
-        <button id="generate-btn" class="btn btn-primary" type="button">生成する</button>
-        <button id="clear-btn" class="btn btn-ghost" type="button">クリア</button>
+        <button id="generate-btn" class="btn btn-primary" type="button" data-i18n="generateBtn">生成する</button>
+        <button id="clear-btn" class="btn btn-ghost" type="button" data-i18n="clearBtn">クリア</button>
       </div>
 
       <p id="status" class="status" aria-live="polite"></p>
     </section>
 
     <section class="card card-output">
-      <h2>プレビュー</h2>
-      <div id="qr-preview" class="qr-preview" aria-label="QRコードプレビュー"></div>
+      <h2 data-i18n="preview">プレビュー</h2>
+      <div id="qr-preview" class="qr-preview" data-i18n-attr-aria-label="previewAria"></div>
 
       <div class="controls controls-output">
-        <button id="download-btn" class="btn btn-primary" type="button" disabled>画像をダウンロード</button>
-        <button id="copy-btn" class="btn btn-secondary" type="button" disabled>画像をコピー</button>
+        <button id="download-btn" class="btn btn-primary" type="button" disabled data-i18n="downloadBtn">画像をダウンロード</button>
+        <button id="copy-btn" class="btn btn-secondary" type="button" disabled data-i18n="copyBtn">画像をコピー</button>
       </div>
     </section>
   </main>

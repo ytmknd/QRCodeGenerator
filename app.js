@@ -1,32 +1,152 @@
-const textInput = document.getElementById("qr-text");
-const preview = document.getElementById("qr-preview");
-const statusEl = document.getElementById("status");
-const generateBtn = document.getElementById("generate-btn");
-const clearBtn = document.getElementById("clear-btn");
-const downloadBtn = document.getElementById("download-btn");
-const copyBtn = document.getElementById("copy-btn");
+// Language dictionary
+const I18N = {
+  ja: {
+    appName: "QRCode Generator",
+    title: "QRコードを作成",
+    description: "文字列やURLを入力して、QRコード画像を生成できます。",
+    inputLabel: "テキスト / URL",
+    inputPlaceholder: "例: https://example.com",
+    generateBtn: "生成する",
+    clearBtn: "クリア",
+    preview: "プレビュー",
+    previewAria: "QRコードプレビュー",
+    downloadBtn: "画像をダウンロード",
+    copyBtn: "画像をコピー",
+    emptyInput: "入力内容が空です。テキストまたはURLを入力してください。",
+    generateSuccess: "QRコードを生成しました。",
+    generateError: "QRコードの生成に失敗しました。",
+    libraryError: "QRライブラリの読み込みに失敗しました。ページを再読み込みしてください。",
+    downloadSuccess: "QRコード画像をダウンロードしました。",
+    downloadFirst: "先にQRコードを生成してください。",
+    copySuccess: "QRコード画像をクリップボードにコピーしました。",
+    copyFirst: "先にQRコードを生成してください。",
+    copyNotSupported: "このブラウザは画像のクリップボードコピーに対応していません。",
+    copyError: "コピーに失敗しました。HTTPS環境か権限設定を確認してください。",
+    clearSuccess: "入力をクリアしました。",
+    previewPlaceholder: "ここにQRコードが表示されます"
+  },
+  en: {
+    appName: "QRCode Generator",
+    title: "Create QR Code",
+    description: "Enter text or a URL to generate a QR code image.",
+    inputLabel: "Text / URL",
+    inputPlaceholder: "Example: https://example.com",
+    generateBtn: "Generate",
+    clearBtn: "Clear",
+    preview: "Preview",
+    previewAria: "Generated QR code preview",
+    downloadBtn: "Download Image",
+    copyBtn: "Copy Image",
+    emptyInput: "Input is empty. Please enter text or a URL.",
+    generateSuccess: "QR code generated successfully.",
+    generateError: "Failed to generate QR code.",
+    libraryError: "Failed to load QR library. Please reload the page.",
+    downloadSuccess: "QR code image downloaded.",
+    downloadFirst: "Generate a QR code first.",
+    copySuccess: "QR code image copied to clipboard.",
+    copyFirst: "Generate a QR code first.",
+    copyNotSupported: "Your browser does not support copying images to clipboard.",
+    copyError: "Copy failed. Check HTTPS context or browser permissions.",
+    clearSuccess: "Input cleared.",
+    previewPlaceholder: "QR code will appear here"
+  }
+};
 
+let currentLanguage = localStorage.getItem("qr-lang") || "ja";
+
+function t(key) {
+  return I18N[currentLanguage]?.[key] || I18N.ja[key] || key;
+}
+
+function updateUI() {
+  document.documentElement.lang = currentLanguage;
+
+  // Update text nodes
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    el.textContent = t(key);
+  });
+
+  // Update placeholder attributes
+  document.querySelectorAll("[data-i18n-attr-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-attr-placeholder");
+    el.placeholder = t(key);
+  });
+
+  // Update aria-label attributes
+  document.querySelectorAll("[data-i18n-attr-aria-label]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-attr-aria-label");
+    el.setAttribute("aria-label", t(key));
+  });
+}
+
+function setLanguage(lang) {
+  if (I18N[lang]) {
+    currentLanguage = lang;
+    localStorage.setItem("qr-lang", lang);
+    updateUI();
+    updateLanguageSwitcher();
+  }
+}
+
+function updateLanguageSwitcher() {
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    if (btn.getAttribute("data-lang") === currentLanguage) {
+      btn.classList.add("lang-btn-active");
+    } else {
+      btn.classList.remove("lang-btn-active");
+    }
+  });
+}
+
+// Initialize language switcher
+document.getElementById("lang-ja").addEventListener("click", () => setLanguage("ja"));
+document.getElementById("lang-en").addEventListener("click", () => setLanguage("en"));
+
+// Initialize UI on page load
+document.addEventListener("DOMContentLoaded", () => {
+  updateUI();
+  updateLanguageSwitcher();
+
+  const textInput = document.getElementById("qr-text");
+  const preview = document.getElementById("qr-preview");
+  const statusEl = document.getElementById("status");
+  const generateBtn = document.getElementById("generate-btn");
+  const clearBtn = document.getElementById("clear-btn");
+  const downloadBtn = document.getElementById("download-btn");
+  const copyBtn = document.getElementById("copy-btn");
+
+  showPlaceholder();
+
+  generateBtn.addEventListener("click", handleGenerate);
+  clearBtn.addEventListener("click", handleClear);
+  downloadBtn.addEventListener("click", handleDownload);
+  copyBtn.addEventListener("click", handleCopyImage);
+
+  textInput.addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+      handleGenerate();
+    }
+  });
+});
+
+let currentLanguage = localStorage.getItem("qr-lang") || "ja";
 let currentImageBlob = null;
 let currentObjectUrl = null;
 
-showPlaceholder();
-
-generateBtn.addEventListener("click", handleGenerate);
-clearBtn.addEventListener("click", handleClear);
-downloadBtn.addEventListener("click", handleDownload);
-copyBtn.addEventListener("click", handleCopyImage);
-
-textInput.addEventListener("keydown", (event) => {
-  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-    handleGenerate();
-  }
-});
+let textInput;
+let preview;
+let statusEl;
+let generateBtn;
+let clearBtn;
+let downloadBtn;
+let copyBtn;
 
 async function handleGenerate() {
   const text = textInput.value.trim();
 
   if (!text) {
-    setStatus("入力内容が空です。テキストまたはURLを入力してください。", true);
+    setStatus(t("emptyInput"), true);
     disableOutputActions();
     showPlaceholder();
     return;
@@ -38,14 +158,14 @@ async function handleGenerate() {
     currentImageBlob = blob;
     downloadBtn.disabled = false;
     copyBtn.disabled = false;
-    setStatus("QRコードを生成しました。", false);
+    setStatus(t("generateSuccess"), false);
   } catch (error) {
     console.error(error);
     currentImageBlob = null;
     disableOutputActions();
     showPlaceholder();
     const details = error instanceof Error ? error.message : "不明なエラー";
-    setStatus(`QRコードの生成に失敗しました。${details}`, true);
+    setStatus(`${t("generateError")}。${details}`, true);
   }
 }
 
@@ -55,12 +175,12 @@ function handleClear() {
   currentImageBlob = null;
   disableOutputActions();
   showPlaceholder();
-  setStatus("入力をクリアしました。", false);
+  setStatus(t("clearSuccess"), false);
 }
 
 function handleDownload() {
   if (!currentImageBlob) {
-    setStatus("先にQRコードを生成してください。", true);
+    setStatus(t("downloadFirst"), true);
     return;
   }
 
@@ -71,17 +191,17 @@ function handleDownload() {
   link.click();
   URL.revokeObjectURL(url);
 
-  setStatus("QRコード画像をダウンロードしました。", false);
+  setStatus(t("downloadSuccess"), false);
 }
 
 async function handleCopyImage() {
   if (!currentImageBlob) {
-    setStatus("先にQRコードを生成してください。", true);
+    setStatus(t("copyFirst"), true);
     return;
   }
 
   if (!navigator.clipboard || !window.ClipboardItem) {
-    setStatus("このブラウザは画像のクリップボードコピーに対応していません。", true);
+    setStatus(t("copyNotSupported"), true);
     return;
   }
 
@@ -91,16 +211,16 @@ async function handleCopyImage() {
         "image/png": currentImageBlob
       })
     ]);
-    setStatus("QRコード画像をクリップボードにコピーしました。", false);
+    setStatus(t("copySuccess"), false);
   } catch (error) {
     console.error(error);
-    setStatus("コピーに失敗しました。HTTPS環境か権限設定を確認してください。", true);
+    setStatus(t("copyError"), true);
   }
 }
 
 async function generateQrBlob(text) {
   if (!window.QRCode || typeof window.QRCode !== "function") {
-    throw new Error("QRライブラリの読み込みに失敗しました。ページを再読み込みしてください。");
+    throw new Error(t("libraryError"));
   }
 
   return generateQrBlobFromLibrary(text);
@@ -218,7 +338,7 @@ function setStatus(message, isError) {
 }
 
 function showPlaceholder() {
-  preview.innerHTML = '<p class="qr-placeholder">ここにQRコードが表示されます</p>';
+  preview.innerHTML = `<p class="qr-placeholder">${t("previewPlaceholder")}</p>`;
 }
 
 function disableOutputActions() {
