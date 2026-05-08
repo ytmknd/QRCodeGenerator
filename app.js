@@ -99,41 +99,7 @@ function updateLanguageSwitcher() {
   });
 }
 
-// Initialize language switcher
-document.getElementById("lang-ja").addEventListener("click", () => setLanguage("ja"));
-document.getElementById("lang-en").addEventListener("click", () => setLanguage("en"));
-
-// Initialize UI on page load
-document.addEventListener("DOMContentLoaded", () => {
-  updateUI();
-  updateLanguageSwitcher();
-
-  const textInput = document.getElementById("qr-text");
-  const preview = document.getElementById("qr-preview");
-  const statusEl = document.getElementById("status");
-  const generateBtn = document.getElementById("generate-btn");
-  const clearBtn = document.getElementById("clear-btn");
-  const downloadBtn = document.getElementById("download-btn");
-  const copyBtn = document.getElementById("copy-btn");
-
-  showPlaceholder();
-
-  generateBtn.addEventListener("click", handleGenerate);
-  clearBtn.addEventListener("click", handleClear);
-  downloadBtn.addEventListener("click", handleDownload);
-  copyBtn.addEventListener("click", handleCopyImage);
-
-  textInput.addEventListener("keydown", (event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-      handleGenerate();
-    }
-  });
-});
-
-let currentLanguage = localStorage.getItem("qr-lang") || "ja";
-let currentImageBlob = null;
-let currentObjectUrl = null;
-
+// Global variables for UI elements and state
 let textInput;
 let preview;
 let statusEl;
@@ -141,6 +107,44 @@ let generateBtn;
 let clearBtn;
 let downloadBtn;
 let copyBtn;
+let currentImageBlob = null;
+let currentObjectUrl = null;
+
+// Initialize UI on page load
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize UI element references
+  textInput = document.getElementById("qr-text");
+  preview = document.getElementById("qr-preview");
+  statusEl = document.getElementById("status");
+  generateBtn = document.getElementById("generate-btn");
+  clearBtn = document.getElementById("clear-btn");
+  downloadBtn = document.getElementById("download-btn");
+  copyBtn = document.getElementById("copy-btn");
+
+  // Update UI and language switcher
+  updateUI();
+  updateLanguageSwitcher();
+
+  // Show placeholder before any interaction
+  showPlaceholder();
+
+  // Attach event listeners
+  generateBtn.addEventListener("click", handleGenerate);
+  clearBtn.addEventListener("click", handleClear);
+  downloadBtn.addEventListener("click", handleDownload);
+  copyBtn.addEventListener("click", handleCopyImage);
+
+  // Language switcher buttons
+  document.getElementById("lang-ja").addEventListener("click", () => setLanguage("ja"));
+  document.getElementById("lang-en").addEventListener("click", () => setLanguage("en"));
+
+  // Keyboard shortcut: Ctrl+Enter to generate
+  textInput.addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+      handleGenerate();
+    }
+  });
+});
 
 async function handleGenerate() {
   const text = textInput.value.trim();
