@@ -23,7 +23,8 @@ const I18N = {
     copyNotSupported: "このブラウザは画像のクリップボードコピーに対応していません。",
     copyError: "コピーに失敗しました。HTTPS環境か権限設定を確認してください。",
     clearSuccess: "入力をクリアしました。",
-    previewPlaceholder: "ここにQRコードが表示されます"
+    previewPlaceholder: "ここにQRコードが表示されます",
+    footerNote: "✓ すべての処理はブラウザ内で完結します。テキストやQRコード画像がサーバーに送信されることはありません。"
   },
   en: {
     appName: "QRCode Generator",
@@ -48,7 +49,8 @@ const I18N = {
     copyNotSupported: "Your browser does not support copying images to clipboard.",
     copyError: "Copy failed. Check HTTPS context or browser permissions.",
     clearSuccess: "Input cleared.",
-    previewPlaceholder: "QR code will appear here"
+    previewPlaceholder: "QR code will appear here",
+    footerNote: "✓ All processing is completed within the browser. Your text and QR code images are never sent to any server."
   }
 };
 

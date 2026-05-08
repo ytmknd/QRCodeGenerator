@@ -22,6 +22,12 @@ A simple web app that generates QR code images in the browser.
 
 ## Setup
 
+### Online (GitHub Pages)
+
+Access the app directly at: **https://ytmknd.github.io/QRCodeGenerator/**
+
+### Local Installation
+
 1. Install dependencies:
 
 ```bash
@@ -49,10 +55,13 @@ Copying image data to the clipboard depends on browser capabilities and permissi
   - `http://localhost`
 - If copy fails, try running the app from localhost and check browser permission prompts.
 
-## Dependency Note
+## Deployment
 
-This project currently loads `qrcodejs` from `node_modules` in `index.html`.
-If you plan to deploy this as static files, consider vendoring `qrcode.min.js` into a local `vendor/` folder and updating the script path.
+This project is deployed as static files on GitHub Pages:
+- Live: https://ytmknd.github.io/QRCodeGenerator/
+- Repository: https://github.com/ytmknd/QRCodeGenerator
+
+The app loads `qrcodejs` from jsDelivr CDN for GitHub Pages compatibility.
 
 ## License
 
